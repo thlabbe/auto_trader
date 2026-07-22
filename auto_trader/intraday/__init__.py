@@ -1,0 +1,1 @@
+"""Intraday OHLCV domain package."""
