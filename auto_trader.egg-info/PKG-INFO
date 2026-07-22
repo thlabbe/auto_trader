@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: auto-trader
+Version: 0.1.0
+Summary: Local market data foundation for PEA portfolio analysis
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: yfinance>=0.2.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: structlog>=24.0.0

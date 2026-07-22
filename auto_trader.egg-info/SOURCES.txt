@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+auto_trader/__init__.py
+auto_trader/cli.py
+auto_trader/main.py
+auto_trader.egg-info/PKG-INFO
+auto_trader.egg-info/SOURCES.txt
+auto_trader.egg-info/dependency_links.txt
+auto_trader.egg-info/entry_points.txt
+auto_trader.egg-info/requires.txt
+auto_trader.egg-info/top_level.txt
+tests/test_main.py
