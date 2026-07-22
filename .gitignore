@@ -223,6 +223,8 @@ __marimo__/
 .*_cache/
 
 
+outputs/runs/feature-implementation/**/.*.*
+
 # --- APM runtime artifacts (auto-added by install-apm-bundle) ---
 __pycache__/
 *.pyc
