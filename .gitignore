@@ -227,7 +227,8 @@ __marimo__/
 __pycache__/
 *.pyc
 outputs/knowledge-plane/
-outputs/runs/_interactive/
+outputs/runs/_interactive/**/*.*
+outputs/runs/_interactive/**/.*.*
 .apm-install-tmp-*/
 .apm-bootstrap-tmp/
 # --- end APM runtime artifacts ---

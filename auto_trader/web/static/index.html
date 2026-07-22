@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Auto Trader</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--card:#161b22;--border:#30363d;
+  --accent:#58a6ff;--text:#e6edf3;--muted:#8b949e;
+  --success:#3fb950;--danger:#f85149;--warn:#d29922;
+  --font:'Segoe UI',system-ui,sans-serif
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh}
+a{color:var(--accent)}
+
+/* header */
+header{background:var(--card);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:24px;position:sticky;top:0;z-index:100}
+.logo{font-size:18px;font-weight:700;color:var(--text);white-space:nowrap;padding:14px 0}
+nav{display:flex;gap:2px;flex:1;overflow-x:auto}
+.tab{background:none;border:none;color:var(--muted);cursor:pointer;padding:16px 14px;font-size:13px;font-family:var(--font);border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* layout */
+main{padding:20px;max-width:1200px;margin:0 auto}
+.panel{display:none}
+.panel.active{display:block}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+
+/* stat grid */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:16px}
+.stat-val{font-size:28px;font-weight:700;color:var(--accent)}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* forms */
+.form-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:12px;color:var(--muted)}
+input,select{background:#0d1117;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 10px;font-size:13px;font-family:var(--font);outline:none}
+input:focus,select:focus{border-color:var(--accent)}
+input[type=number]{width:90px}
+
+/* buttons */
+.btn{border:none;border-radius:6px;cursor:pointer;font-size:13px;font-family:var(--font);padding:7px 14px;transition:opacity .15s}
+.btn:hover{opacity:.85}
+.btn-primary{background:var(--accent);color:#000}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-danger{background:#5c0a0a;color:var(--danger);border:1px solid var(--danger)}
+.btn-sm{padding:4px 10px;font-size:12px}
+
+/* tables */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 10px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid #21262d;white-space:nowrap}
+tr:hover td{background:#1c2128}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-bull{background:#0d2614;color:var(--success)}
+.badge-bear{background:#2c0b0b;color:var(--danger)}
+.badge-ok{background:#0d2614;color:var(--success)}
+.badge-err{background:#2c0b0b;color:var(--danger)}
+
+/* toast */
+#toasts{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:999}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 16px;font-size:13px;min-width:220px;animation:fadein .2s}
+.toast.ok{border-left:3px solid var(--success)}
+.toast.err{border-left:3px solid var(--danger)}
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* spinner */
+.loading{color:var(--muted);font-size:13px;padding:20px 0}
+
+/* sub-tabs */
+.subtabs{display:flex;gap:4px;margin-bottom:16px}
+.stab{background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;padding:5px 12px;font-size:12px;font-family:var(--font)}
+.stab.active{background:var(--accent);border-color:var(--accent);color:#000}
+.subpanel{display:none}
+.subpanel.active{display:block}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">🤖 Auto Trader</span>
+  <nav>
+    <button class="tab active" data-panel="dashboard">Dashboard</button>
+    <button class="tab" data-panel="instruments">Instruments</button>
+    <button class="tab" data-panel="sync">Sync</button>
+    <button class="tab" data-panel="data">Market Data</button>
+    <button class="tab" data-panel="indicators">Indicateurs</button>
+    <button class="tab" data-panel="signals">Signaux</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ══ DASHBOARD ══════════════════════════════════════════════════════════════ -->
+<section id="panel-dashboard" class="panel active">
+  <div class="stats" id="dash-stats">
+    <div class="stat"><div class="stat-val" id="dash-nb-inst">…</div><div class="stat-lbl">Instruments</div></div>
+    <div class="stat"><div class="stat-val" id="dash-nb-ticker">…</div><div class="stat-lbl">Tickers résolus</div></div>
+    <div class="stat"><div class="stat-val" id="dash-last-sync">…</div><div class="stat-lbl">Dernier sync</div></div>
+    <div class="stat"><div class="stat-val" id="dash-nb-signals">…</div><div class="stat-lbl">Signaux enregistrés</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Instruments PEA</div>
+    <div id="dash-inst-table" class="loading">Chargement…</div>
+  </div>
+</section>
+
+<!-- ══ INSTRUMENTS ════════════════════════════════════════════════════════════ -->
+<section id="panel-instruments" class="panel">
+  <div class="card">
+    <div class="form-row">
+      <div class="field"><label>Recherche</label><input id="inst-search" placeholder="ticker ou label…"/></div>
+      <button class="btn btn-primary" onclick="loadInstruments()">Actualiser</button>
+      <button class="btn btn-ghost" onclick="seedInstruments()">Seed 8 MVP</button>
+    </div>
+    <div id="inst-table" class="loading">Chargement…</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Résolution ticker (ISIN → yf_symbol)</div>
+    <div class="form-row">
+      <div class="field">
+        <label>ISIN (vide = résoudre tous les non-résolus)</label>
+        <input id="res-isin" placeholder="FR0000120271" style="width:200px"/>
+      </div>
+      <div class="field">
+        <label>Limite (si résolution globale)</label>
+        <input id="res-limit" type="number" placeholder="tous" min="1" style="width:90px"/>
+      </div>
+      <div class="field" style="justify-content:flex-end">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input id="res-dryrun" type="checkbox"/>
+          Dry-run (aperçu sans sauvegarder)
+        </label>
+      </div>
+      <button class="btn btn-primary" onclick="resolveInstruments()">▶ Résoudre</button>
+    </div>
+    <div id="res-result"></div>
+  </div>
+</section>
+
+<!-- ══ SYNC ═══════════════════════════════════════════════════════════════════ -->
+<section id="panel-sync" class="panel">
+  <div class="card">
+    <div class="card-title">Lancer un sync</div>
+    <div class="form-row">
+      <div class="field"><label>Tickers (optionnel, espace-séparé)</label><input id="sync-tickers" placeholder="AI BNPP… ou vide = tous"/></div>
+      <button class="btn btn-primary" onclick="runSync()">▶ Lancer</button>
+    </div>
+    <div id="sync-result"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Historique sync</div>
+    <div class="form-row">
+      <div class="field"><label>Limite</label><input id="sync-limit" type="number" value="20" min="1" max="200"/></div>
+      <button class="btn btn-ghost btn-sm" onclick="loadSyncHistory()">Actualiser</button>
+    </div>
+    <div id="sync-history" class="loading">Chargement…</div>
+  </div>
+</section>
+
+<!-- ══ MARKET DATA ════════════════════════════════════════════════════════════ -->
+<section id="panel-data" class="panel">
+  <div class="subtabs">
+    <button class="stab active" data-sub="data-interday">Interday</button>
+    <button class="stab" data-sub="data-intraday">Intraday</button>
+    <button class="stab" data-sub="data-dividends">Dividendes</button>
+  </div>
+
+  <div id="data-interday" class="subpanel active card">
+    <div class="card-title">OHLCV Interday</div>
+    <div class="form-row">
+      <div class="field"><label>Ticker</label><input id="id-ticker" placeholder="BNPP"/></div>
+      <div class="field"><label>Depuis</label><input id="id-from" type="date"/></div>
+      <div class="field"><label>Jusqu'au</label><input id="id-to" type="date"/></div>
+      <button class="btn btn-primary" onclick="queryInterday()">Chercher</button>
+    </div>
+    <div id="id-result"></div>
+  </div>
+
+  <div id="data-intraday" class="subpanel card">
+    <div class="card-title">OHLCV Intraday</div>
+    <div class="form-row">
+      <div class="field"><label>Ticker</label><input id="it-ticker" placeholder="BNPP"/></div>
+      <div class="field"><label>Jours</label><input id="it-days" type="number" value="30" min="1"/></div>
+      <button class="btn btn-primary" onclick="queryIntraday()">Chercher</button>
+    </div>
+    <div id="it-result"></div>
+  </div>
+
+  <div id="data-dividends" class="subpanel card">
+    <div class="card-title">Dividendes</div>
+    <div class="form-row">
+      <div class="field"><label>Ticker</label><input id="div-ticker" placeholder="BNPP"/></div>
+      <button class="btn btn-primary" onclick="queryDividends()">Chercher</button>
+    </div>
+    <div id="div-result"></div>
+  </div>
+</section>
+
+<!-- ══ INDICATORS ═════════════════════════════════════════════════════════════ -->
+<section id="panel-indicators" class="panel">
+  <div class="subtabs">
+    <button class="stab active" data-sub="ind-compute">Calculer</button>
+    <button class="stab" data-sub="ind-query">Consulter</button>
+  </div>
+
+  <div id="ind-compute" class="subpanel active card">
+    <div class="card-title">Calculer des indicateurs</div>
+    <div class="form-row">
+      <div class="field"><label>Ticker</label><input id="ic-ticker" placeholder="AI"/></div>
+      <div class="field"><label>Indicateur</label>
+        <select id="ic-ind">
+          <option value="">Tous (SMA+EMA+RSI+BB+MACD)</option>
+          <option>SMA</option><option>EMA</option><option>RSI</option>
+          <option>BB</option><option>MACD</option>
+        </select>
+      </div>
+      <div class="field"><label>Période</label><input id="ic-period" type="number" value="20" min="2" max="200"/></div>
+      <button class="btn btn-primary" onclick="computeIndicators()">Calculer</button>
+    </div>
+    <div id="ic-result"></div>
+  </div>
+
+  <div id="ind-query" class="subpanel card">
+    <div class="card-title">Consulter les valeurs stockées</div>
+    <div class="form-row">
+      <div class="field"><label>Ticker</label><input id="iq-ticker" placeholder="AI"/></div>
+      <div class="field"><label>Indicateur</label>
+        <select id="iq-ind">
+          <option>RSI</option><option>SMA</option><option>EMA</option>
+          <option>MACD_LINE</option><option>MACD_SIGNAL</option><option>MACD_HIST</option>
+          <option>BB_UPPER</option><option>BB_MIDDLE</option><option>BB_LOWER</option>
+        </select>
+      </div>
+      <div class="field"><label>Params JSON</label><input id="iq-params" value='{"period": 20}' style="width:160px"/></div>
+      <button class="btn btn-primary" onclick="queryIndicator()">Consulter</button>
+    </div>
+    <div id="iq-result"></div>
+  </div>
+</section>
+
+<!-- ══ SIGNALS ════════════════════════════════════════════════════════════════ -->
+<section id="panel-signals" class="panel">
+  <div class="subtabs">
+    <button class="stab active" data-sub="sig-scan">Scanner</button>
+    <button class="stab" data-sub="sig-list">Historique</button>
+  </div>
+
+  <div id="sig-scan" class="subpanel active card">
+    <div class="card-title">Détecter des signaux</div>
+    <div class="form-row">
+      <div class="field"><label>Ticker (vide = tous)</label><input id="ss-ticker" placeholder="AI"/></div>
+      <div class="field"><label>Type de signal</label>
+        <select id="ss-signal">
+          <option value="">Tous</option>
+          <option>RSI_OVERSOLD</option><option>RSI_OVERBOUGHT</option>
+          <option>MACD_BULLISH_CROSS</option><option>MACD_BEARISH_CROSS</option>
+          <option>PRICE_ABOVE</option><option>PRICE_BELOW</option>
+        </select>
+      </div>
+      <div class="field"><label>RSI Oversold</label><input id="ss-over" type="number" value="30" min="1" max="99" step="1"/></div>
+      <div class="field"><label>RSI Overbought</label><input id="ss-overbought" type="number" value="70" min="1" max="99" step="1"/></div>
+      <button class="btn btn-primary" onclick="scanSignals()">▶ Scanner</button>
+    </div>
+    <div id="ss-result"></div>
+  </div>
+
+  <div id="sig-list" class="subpanel card">
+    <div class="card-title">Signaux enregistrés</div>
+    <div class="form-row">
+      <div class="field"><label>Ticker</label><input id="sl-ticker" placeholder="tous"/></div>
+      <div class="field"><label>Type</label>
+        <select id="sl-signal">
+          <option value="">Tous</option>
+          <option>RSI_OVERSOLD</option><option>RSI_OVERBOUGHT</option>
+          <option>MACD_BULLISH_CROSS</option><option>MACD_BEARISH_CROSS</option>
+          <option>PRICE_ABOVE</option><option>PRICE_BELOW</option>
+        </select>
+      </div>
+      <div class="field"><label>Depuis (YYYY-MM-DD)</label><input id="sl-since" type="date"/></div>
+      <button class="btn btn-primary" onclick="listSignals()">Chercher</button>
+    </div>
+    <div id="sl-result"></div>
+  </div>
+</section>
+
+</main>
+<div id="toasts"></div>
+
+<script>
+// ── utils ──────────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const val = id => $(id)?.value?.trim() || '';
+
+function toast(msg, ok=true){
+  const el=document.createElement('div');
+  el.className=`toast ${ok?'ok':'err'}`;
+  el.textContent=msg;
+  $('toasts').appendChild(el);
+  setTimeout(()=>el.remove(),3500);
+}
+
+async function api(method,url,body=null){
+  const opts={method,headers:{'Content-Type':'application/json'}};
+  if(body) opts.body=JSON.stringify(body);
+  const r=await fetch(url,opts);
+  const data=await r.json();
+  if(!r.ok) throw new Error(data.detail||JSON.stringify(data));
+  return data;
+}
+
+function tbl(cols,rows,fmt={}){
+  if(!rows.length) return '<p style="color:var(--muted);padding:12px 0">Aucune donnée.</p>';
+  const head=cols.map(c=>`<th>${c}</th>`).join('');
+  const body=rows.map(r=>`<tr>${cols.map(c=>{
+    const v=r[c];
+    if(fmt[c]) return `<td>${fmt[c](v,r)}</td>`;
+    return `<td>${v??'—'}</td>`;
+  }).join('')}</tr>`).join('');
+  return `<div class="tbl-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
+function dirBadge(d){
+  if(d==='BULL') return '<span class="badge badge-bull">▲ BULL</span>';
+  if(d==='BEAR') return '<span class="badge badge-bear">▼ BEAR</span>';
+  return d;
+}
+
+// ── tabs ───────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    $('panel-'+btn.dataset.panel).classList.add('active');
+    if(btn.dataset.panel==='sync') loadSyncHistory();
+    if(btn.dataset.panel==='signals') listSignals();
+  });
+});
+
+document.querySelectorAll('.stab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const parent=btn.closest('section')||btn.closest('.panel');
+    parent.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+    parent.querySelectorAll('.subpanel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    $(btn.dataset.sub).classList.add('active');
+  });
+});
+
+// ── dashboard ──────────────────────────────────────────────────────────────────
+async function loadDashboard(){
+  try{
+    const [inst,sync,sigs]=await Promise.all([
+      api('GET','/api/instruments'),
+      api('GET','/api/sync/status?limit=1'),
+      api('GET','/api/signals/list'),
+    ]);
+    $('dash-nb-inst').textContent=inst.count;
+    $('dash-nb-ticker').textContent=inst.data.filter(i=>i.yf_symbol).length;
+    $('dash-last-sync').textContent=sync.data[0]?.started_at?.slice(0,10)||'—';
+    $('dash-nb-signals').textContent=sigs.count;
+    $('dash-inst-table').innerHTML=tbl(
+      ['ticker','label','isin','yf_symbol'],
+      inst.data,
+      {yf_symbol:v=>v?`<span class="badge badge-ok">${v}</span>`:'<span style="color:var(--muted)">non résolu</span>'}
+    );
+  }catch(e){toast(e.message,false);}
+}
+
+// ── instruments ────────────────────────────────────────────────────────────────
+async function loadInstruments(){
+  $('inst-table').innerHTML='<div class="loading">Chargement…</div>';
+  try{
+    const {data}=await api('GET','/api/instruments');
+    const q=val('inst-search').toLowerCase();
+    const filtered=q?data.filter(i=>(i.ticker+i.label+i.isin).toLowerCase().includes(q)):data;
+    $('inst-table').innerHTML=tbl(
+      ['ticker','label','isin','yf_symbol'],
+      filtered,
+      {yf_symbol:v=>v?`<span class="badge badge-ok">${v}</span>`:'<span style="color:var(--muted)">—</span>'}
+    );
+  }catch(e){toast(e.message,false);}
+}
+
+async function seedInstruments(){
+  try{
+    const {seeded}=await api('POST','/api/instruments/seed');
+    toast(`${seeded} instruments seedés`);
+    loadInstruments();
+    loadDashboard();
+  }catch(e){toast(e.message,false);}
+}
+
+$('inst-search').addEventListener('keyup',e=>{ if(e.key==='Enter') loadInstruments(); });
+
+async function resolveInstruments(){
+  const isin=val('res-isin')||null;
+  const dry_run=$('res-dryrun').checked;
+  const lim=parseInt($('res-limit').value)||null;
+  $('res-result').innerHTML='<div class="loading">Résolution en cours… (requêtes Yahoo Finance, peut prendre quelques secondes)</div>';
+  try{
+    const r=await api('POST','/api/instruments/resolve',{isin,dry_run,limit:lim});
+    if(isin){
+      const badge=dry_run?'<span class="badge badge-ok">dry-run</span>':'<span class="badge badge-ok">enregistré</span>';
+      $('res-result').innerHTML=`<p style="color:var(--success)">✓ ${r.isin} → <strong>${r.yf_symbol}</strong> ${badge}</p>`;
+    } else {
+      const badge=dry_run?'<span class="badge badge-ok">dry-run</span>':'';
+      $('res-result').innerHTML=`<p style="color:var(--success)">✓ Résolus: <strong>${r.resolved}</strong> · Échecs: ${r.failed} ${badge}</p>`;
+    }
+    if(!dry_run){loadInstruments();loadDashboard();}
+    toast(dry_run?'Aperçu uniquement (dry-run)':'Résolution terminée');
+  }catch(e){
+    $('res-result').innerHTML=`<p style="color:var(--danger)">${e.message}</p>`;
+    toast(e.message,false);
+  }
+}
+
+// ── sync ───────────────────────────────────────────────────────────────────────
+async function runSync(){
+  const t=val('sync-tickers');
+  const tickers=t?t.split(/\s+/).filter(Boolean):null;
+  $('sync-result').innerHTML='<div class="loading">Sync en cours… (peut prendre plusieurs secondes)</div>';
+  try{
+    const r=await api('POST','/api/sync/run',{tickers});
+    $('sync-result').innerHTML=`<p style="color:var(--success)">✓ Créés: ${r.created} · Mis à jour: ${r.updated} · Erreurs: ${r.errors}</p>`;
+    toast('Sync terminé');
+    loadSyncHistory();
+    loadDashboard();
+  }catch(e){$('sync-result').innerHTML=`<p style="color:var(--danger)">${e.message}</p>`;toast(e.message,false);}
+}
+
+async function loadSyncHistory(){
+  const lim=parseInt(val('sync-limit'))||20;
+  try{
+    const {data}=await api('GET',`/api/sync/status?limit=${lim}`);
+    $('sync-history').innerHTML=tbl(
+      ['started_at','ended_at','source','created','updated','errors'],
+      data,
+      {errors:v=>v>0?`<span class="badge badge-err">${v}</span>`:v}
+    );
+  }catch(e){toast(e.message,false);}
+}
+
+// ── market data ────────────────────────────────────────────────────────────────
+async function queryInterday(){
+  const tk=val('id-ticker'); if(!tk){toast('Ticker requis',false);return;}
+  const from=val('id-from'),to=val('id-to');
+  let url=`/api/data/interday/${encodeURIComponent(tk)}`;
+  const p=[];if(from)p.push(`from_date=${from}`);if(to)p.push(`to_date=${to}`);
+  if(p.length) url+='?'+p.join('&');
+  $('id-result').innerHTML='<div class="loading">Chargement…</div>';
+  try{
+    const {data,count}=await api('GET',url);
+    $('id-result').innerHTML=`<p style="color:var(--muted);margin-bottom:8px">${count} lignes</p>`
+      +tbl(['date','open','close','volume'],data);
+  }catch(e){$('id-result').innerHTML=`<p style="color:var(--danger)">${e.message}</p>`;}
+}
+
+async function queryIntraday(){
+  const tk=val('it-ticker'); if(!tk){toast('Ticker requis',false);return;}
+  const days=parseInt(val('it-days'))||30;
+  $('it-result').innerHTML='<div class="loading">Chargement…</div>';
+  try{
+    const {data,count}=await api('GET',`/api/data/intraday/${encodeURIComponent(tk)}?days=${days}`);
+    $('it-result').innerHTML=`<p style="color:var(--muted);margin-bottom:8px">${count} lignes</p>`
+      +tbl(['datetime','open','close','volume'],data);
+  }catch(e){$('it-result').innerHTML=`<p style="color:var(--danger)">${e.message}</p>`;}
+}
+
+async function queryDividends(){
+  const tk=val('div-ticker'); if(!tk){toast('Ticker requis',false);return;}
+  $('div-result').innerHTML='<div class="loading">Chargement…</div>';
+  try{
+    const {data,count}=await api('GET',`/api/data/dividends/${encodeURIComponent(tk)}`);
+    $('div-result').innerHTML=`<p style="color:var(--muted);margin-bottom:8px">${count} dividendes</p>`
+      +tbl(['ex_date','amount','currency'],data);
+  }catch(e){$('div-result').innerHTML=`<p style="color:var(--danger)">${e.message}</p>`;}
+}
+
+// ── indicators ─────────────────────────────────────────────────────────────────
+async function computeIndicators(){
+  const ticker=val('ic-ticker'); if(!ticker){toast('Ticker requis',false);return;}
+  const indicator=val('ic-ind')||null;
+  const period=parseInt($('ic-period').value)||20;
+  $('ic-result').innerHTML='<div class="loading">Calcul en cours…</div>';
+  try{
+    const {computed}=await api('POST','/api/indicators/compute',{ticker,indicator,period});
+    $('ic-result').innerHTML=tbl(['indicator','period','rows'],computed);
+    toast(`${computed.length} indicateur(s) calculé(s)`);
+  }catch(e){$('ic-result').innerHTML=`<p style="color:var(--danger)">${e.message}</p>`;toast(e.message,false);}
+}
+
+async function queryIndicator(){
+  const ticker=val('iq-ticker'); if(!ticker){toast('Ticker requis',false);return;}
+  const indicator=$('iq-ind').value;
+  const params=val('iq-params')||'{}';
+  $('iq-result').innerHTML='<div class="loading">Chargement…</div>';
+  try{
+    const {data,count}=await api('GET',
+      `/api/indicators/query/${encodeURIComponent(ticker)}?indicator=${encodeURIComponent(indicator)}&params=${encodeURIComponent(params)}`);
+    $('iq-result').innerHTML=`<p style="color:var(--muted);margin-bottom:8px">${count} valeurs</p>`
+      +tbl(['date','value'],data);
+  }catch(e){$('iq-result').innerHTML=`<p style="color:var(--danger)">${e.message}</p>`;}
+}
+
+// ── signals ────────────────────────────────────────────────────────────────────
+async function scanSignals(){
+  const ticker=val('ss-ticker')||null;
+  const signal=val('ss-signal')||null;
+  const rsi_oversold=parseFloat($('ss-over').value)||30;
+  const rsi_overbought=parseFloat($('ss-overbought').value)||70;
+  $('ss-result').innerHTML='<div class="loading">Scan en cours…</div>';
+  try{
+    const {data,count}=await api('POST','/api/signals/scan',{ticker,signal,rsi_oversold,rsi_overbought});
+    $('ss-result').innerHTML=`<p style="color:var(--muted);margin-bottom:8px">${count} signal(s) détecté(s)</p>`
+      +tbl(['ticker','date','signal_type','value','threshold','direction'],data,
+        {direction:v=>dirBadge(v)});
+    if(count>0)toast(`${count} signal(s) détecté(s) et enregistré(s)`);
+    else toast('Aucun signal déclenché');
+    loadDashboard();
+  }catch(e){$('ss-result').innerHTML=`<p style="color:var(--danger)">${e.message}</p>`;toast(e.message,false);}
+}
+
+async function listSignals(){
+  const ticker=val('sl-ticker')||null;
+  const signal=val('sl-signal')||null;
+  const since=val('sl-since')||null;
+  let url='/api/signals/list';
+  const p=[];if(ticker)p.push(`ticker=${ticker}`);if(signal)p.push(`signal=${signal}`);if(since)p.push(`since=${since}`);
+  if(p.length) url+='?'+p.join('&');
+  $('sl-result').innerHTML='<div class="loading">Chargement…</div>';
+  try{
+    const {data,count}=await api('GET',url);
+    $('sl-result').innerHTML=`<p style="color:var(--muted);margin-bottom:8px">${count} signal(s)</p>`
+      +tbl(['ticker','date','signal_type','value','threshold','direction'],data,
+        {direction:v=>dirBadge(v)});
+  }catch(e){$('sl-result').innerHTML=`<p style="color:var(--danger)">${e.message}</p>`;}
+}
+
+// ── init ───────────────────────────────────────────────────────────────────────
+loadDashboard();
+loadInstruments();
+</script>
+</body>
+</html>

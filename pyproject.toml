@@ -8,6 +8,8 @@ dependencies = [
     "yfinance>=0.2.37",
     "pandas>=2.0.0",
     "structlog>=24.0.0",
+    "fastapi>=0.111.0",
+    "uvicorn>=0.29.0",
 ]
 
 [project.scripts]
@@ -17,7 +19,7 @@ auto_trader = "auto_trader.cli:main"
 packages = ["auto_trader"]
 
 [tool.setuptools.package-data]
-auto_trader = ["py.typed"]
+auto_trader = ["py.typed", "web/static/*"]
 
 [dependency-groups]
 dev = [
@@ -62,4 +64,8 @@ exclude_lines = [
 [tool.mypy]
 python_version = "3.13"
 strict = true
+
+[[tool.mypy.overrides]]
+module = "auto_trader.web.*"
+ignore_errors = true
 
