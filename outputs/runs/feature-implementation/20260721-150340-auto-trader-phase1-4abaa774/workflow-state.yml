@@ -1,0 +1,99 @@
+workflow: feature-implementation
+feature: auto-trader-phase1
+started: "2026-07-21T15:03:40Z"
+status: in-progress
+trace_id: 4abaa774-ea3a-4783-9ba3-73813646a659
+current_station: constitution
+stations:
+  - id: constitution
+    status: pending
+    started: —
+    completed: —
+    gate: —
+  - id: brownfield-context
+    status: pending
+    started: —
+    completed: —
+    gate: —
+  - id: specification
+    status: pending
+    started: —
+    completed: —
+    gate: —
+  - id: clarification
+    status: pending
+    started: —
+    completed: —
+    gate: —
+  - id: architecture-review
+    status: pending
+    started: —
+    completed: —
+    gate: —
+  - id: planning
+    status: pending
+    started: —
+    completed: —
+    gate: —
+  - id: task-breakdown
+    status: pending
+    started: —
+    completed: —
+    gate: —
+  - id: implementation
+    status: pending
+    started: —
+    completed: —
+    gate: —
+  - id: quality-validation
+    status: pending
+    started: —
+    completed: —
+    gate: —
+  - id: quality-validation/lint-analysis
+    status: pending
+    started: —
+    completed: —
+    gate: —
+    parent: quality-validation
+  - id: quality-validation/static-analysis
+    status: pending
+    started: —
+    completed: —
+    gate: —
+    parent: quality-validation
+  - id: quality-validation/security-sast
+    status: pending
+    started: —
+    completed: —
+    gate: —
+    parent: quality-validation
+  - id: quality-validation/dependency-audit
+    status: pending
+    started: —
+    completed: —
+    gate: —
+    parent: quality-validation
+  - id: quality-validation/coverage
+    status: pending
+    started: —
+    completed: —
+    gate: —
+    parent: quality-validation
+  - id: quality-validation/security-dast
+    status: pending
+    started: —
+    completed: —
+    gate: —
+    parent: quality-validation
+  - id: quality-validation/quality-report
+    status: pending
+    started: —
+    completed: —
+    gate: —
+    parent: quality-validation
+  - id: final-quality-gate
+    status: pending
+    started: —
+    completed: —
+    gate: —

@@ -1,0 +1,84 @@
+workflow: feature-implementation
+feature: alerts-signals
+started: "2026-07-22T13:00:15Z"
+status: passed
+trace_id: 97686fda-56a0-4686-8bfb-31344aff715c
+current_station: ""
+stations:
+  - id: specification
+    status: passed
+    started: "2026-07-22T13:00:27Z"
+    completed: "2026-07-22T13:03:32Z"
+    gate: pass
+  - id: clarification
+    status: passed
+    started: "2026-07-22T13:04:43Z"
+    completed: "2026-07-22T13:06:06Z"
+    gate: pass
+  - id: architecture-review
+    status: passed
+    started: "2026-07-22T13:06:14Z"
+    completed: "2026-07-22T13:07:38Z"
+    gate: pass
+  - id: plan
+    status: passed
+    started: "2026-07-22T13:07:51Z"
+    completed: "2026-07-22T13:09:52Z"
+    gate: pass
+  - id: tasks
+    status: passed
+    started: "2026-07-22T13:10:02Z"
+    completed: "2026-07-22T13:11:42Z"
+    gate: pass
+  - id: implementation
+    status: passed
+    started: "2026-07-22T13:11:51Z"
+    completed: "2026-07-22T13:21:21Z"
+    gate: pass
+  - id: quality-validation
+    status: passed
+    started: "2026-07-22T13:21:28Z"
+    completed: "2026-07-22T13:25:27Z"
+    gate: pass
+  - id: quality-validation/lint-analysis
+    status: passed
+    started: "2026-07-22T13:21:28Z"
+    completed: "2026-07-22T13:21:53Z"
+    gate: pass
+    parent: quality-validation
+  - id: quality-validation/static-analysis
+    status: passed
+    started: "2026-07-22T13:22:02Z"
+    completed: "2026-07-22T13:22:20Z"
+    gate: pass
+    parent: quality-validation
+  - id: quality-validation/security-sast
+    status: passed
+    started: "2026-07-22T13:22:22Z"
+    completed: "2026-07-22T13:22:39Z"
+    gate: pass
+    parent: quality-validation
+  - id: quality-validation/dependency-audit
+    status: passed
+    started: "2026-07-22T13:22:41Z"
+    completed: "2026-07-22T13:23:24Z"
+    gate: pass
+    parent: quality-validation
+  - id: quality-validation/coverage
+    status: passed
+    started: "2026-07-22T13:23:26Z"
+    completed: "2026-07-22T13:24:03Z"
+    gate: pass
+    parent: quality-validation
+  - id: quality-validation/security-dast
+    status: passed
+    started: "2026-07-22T13:24:05Z"
+    completed: "2026-07-22T13:24:15Z"
+    gate: pass
+    parent: quality-validation
+  - id: quality-validation/quality-report
+    status: passed
+    started: "2026-07-22T13:24:20Z"
+    completed: "2026-07-22T13:25:27Z"
+    gate: pass
+    parent: quality-validation

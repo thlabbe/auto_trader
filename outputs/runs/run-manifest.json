@@ -1,0 +1,37 @@
+[
+  {
+    "trace_id": "4abaa774-ea3a-4783-9ba3-73813646a659",
+    "workflow": "feature-implementation",
+    "feature": "auto-trader-phase1",
+    "run_dir": "outputs/runs/feature-implementation/20260721-150340-auto-trader-phase1-4abaa774",
+    "started": "2026-07-21T15:03:40Z",
+    "completed": "2026-07-22T08:30:14Z",
+    "status": "completed"
+  },
+  {
+    "trace_id": "ecfc444a-8b26-49d8-8606-8e0cf7cd5c90",
+    "workflow": "feature-implementation",
+    "feature": "ticker-resolver",
+    "run_dir": "outputs/runs/feature-implementation/20260722-094954-ticker-resolver-ecfc444a",
+    "started": "2026-07-22T09:49:54Z",
+    "completed": "2026-07-22T10:36:47Z",
+    "status": "completed"
+  },
+  {
+    "trace_id": "c108f2f6-ceb4-4aea-982a-5f302b1aaff6",
+    "workflow": "feature-implementation",
+    "feature": "technical-indicators",
+    "run_dir": "outputs/runs/feature-implementation/20260722-111049-technical-indicators-c108f2f6",
+    "started": "2026-07-22T11:10:49Z",
+    "completed": "2026-07-22T12:35:12Z",
+    "status": "completed"
+  },
+  {
+    "trace_id": "97686fda-56a0-4686-8bfb-31344aff715c",
+    "workflow": "feature-implementation",
+    "feature": "alerts-signals",
+    "run_dir": "outputs/runs/feature-implementation/20260722-130015-alerts-signals-97686fda",
+    "started": "2026-07-22T13:00:15Z",
+    "status": "in-progress"
+  }
+]
