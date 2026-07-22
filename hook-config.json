@@ -1,0 +1,33 @@
+{
+  "enabled": true,
+
+  "pii_scan_enabled": true,
+  "injection_detection_enabled": true,
+  "policy_check_enabled": true,
+
+  "redaction_mode": "mask",
+  "pii_patterns_extra": [],
+
+  "risk_threshold": 30,
+  "risk_factor_weights": {
+    "regulated_client": 2.0,
+    "external_mcp": 1.5,
+    "production_data": 1.8,
+    "destructive_action": 2.0,
+    "autonomous_execution": 1.5
+  },
+  "token_cost_threshold": 50000,
+
+  "client_profile": "",
+  "sensitivity_default": "internal",
+  "risk_factors_active": [],
+
+  "otlp_enabled": false,
+  "otlp_endpoint": "",
+  "otlp_headers": {},
+
+  "allowed_tools": [
+    "codebase", "search", "edit/editFiles", "problems",
+    "runCommands", "github", "terminal", "fetch", "vscode"
+  ]
+}

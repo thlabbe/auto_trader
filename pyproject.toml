@@ -1,0 +1,65 @@
+[project]
+name = "auto-trader"
+version = "0.1.0"
+description = "Local market data foundation for PEA portfolio analysis"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "yfinance>=0.2.37",
+    "pandas>=2.0.0",
+    "structlog>=24.0.0",
+]
+
+[project.scripts]
+auto_trader = "auto_trader.cli:main"
+
+[tool.setuptools]
+packages = ["auto_trader"]
+
+[tool.setuptools.package-data]
+auto_trader = ["py.typed"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+    "bandit>=1.8.0",
+    "pip-audit>=2.7.0",
+    "pandas-stubs>=2.0.0",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: mark test as requiring network or external resources",
+]
+testpaths = ["tests"]
+addopts = "-m 'not integration'"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.coverage.run]
+source = ["auto_trader"]
+omit = [
+    "auto_trader/sync/adapters/yahoo.py",  # live-network adapter, tested via FakeDataSourceAdapter
+    "auto_trader/main.py",                  # __main__ entry point guard
+    "auto_trader/cli.py",                   # CLI driver layer, tested via acceptance tests
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+
