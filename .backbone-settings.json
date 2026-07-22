@@ -1,0 +1,16 @@
+{
+  "projectName": "Auto Trader",
+  "projectType": "greenfield",
+  "sdlcPhases": ["analysis", "planning", "solutioning", "implementation", "testing"],
+  "sdlcDepth": "full",
+  "technicalStack": {
+    "frontend": ["vue"],
+    "backend": ["python"]
+  },
+  "cloudProviders": ["none"],
+  "integrations": ["other"],
+  "needsSecurityAuditing": false,
+  "needsBrandCompliance": false,
+  "needsDocumentGeneration": true,
+  "needsAccessibility": false
+}

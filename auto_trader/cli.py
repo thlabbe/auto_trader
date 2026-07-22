@@ -365,6 +365,20 @@ def cmd_signals_list(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_web_serve(args: argparse.Namespace) -> int:
+    import uvicorn
+
+    print(f"Dashboard disponible sur http://{args.host}:{args.port}")
+    uvicorn.run(
+        "auto_trader.web.app:app",
+        host=args.host,
+        port=args.port,
+        reload=False,
+        log_level="warning",
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="auto_trader", description="Auto Trader CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -463,6 +477,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sig_list_p.add_argument("--since", metavar="DATE", help="Filter signals since YYYY-MM-DD")
     sig_list_p.set_defaults(func=cmd_signals_list)
+
+    # web
+    web_p = sub.add_parser("web", help="Tableau de bord web")
+    web_sub = web_p.add_subparsers(dest="subcommand", required=True)
+
+    web_serve_p = web_sub.add_parser("serve", help="Démarrer le serveur web")
+    web_serve_p.add_argument("--host", default="127.0.0.1", help="Adresse d'écoute (défaut: 127.0.0.1)")
+    web_serve_p.add_argument("--port", type=int, default=8080, help="Port (défaut: 8080)")
+    web_serve_p.set_defaults(func=cmd_web_serve)
 
     return parser
 
