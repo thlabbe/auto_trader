@@ -1,0 +1,39 @@
+{
+    "hooks":  {
+                  "SessionStart":  [
+                                       {
+                                           "command":  "python .github/hooks/engine/entry/session_start.py",
+                                           "timeout":  15,
+                                           "type":  "command"
+                                       }
+                                   ],
+                  "PreToolUse":  [
+                                     {
+                                         "command":  "python .github/hooks/engine/entry/pre_tool_use.py",
+                                         "timeout":  15,
+                                         "type":  "command"
+                                     }
+                                 ],
+                  "PostToolUse":  [
+                                      {
+                                          "command":  "python .github/hooks/engine/entry/post_tool_use.py",
+                                          "timeout":  15,
+                                          "type":  "command"
+                                      }
+                                  ],
+                  "UserPromptSubmit":  [
+                                           {
+                                               "command":  "python .github/hooks/engine/entry/user_prompt_submit.py",
+                                               "timeout":  10,
+                                               "type":  "command"
+                                           }
+                                       ],
+                  "Stop":  [
+                               {
+                                   "command":  "python .github/hooks/engine/entry/stop.py",
+                                   "timeout":  15,
+                                   "type":  "command"
+                               }
+                           ]
+              }
+}
